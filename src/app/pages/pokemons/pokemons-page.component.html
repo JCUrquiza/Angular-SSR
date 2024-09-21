@@ -5,19 +5,26 @@
 
 
 <!-- Pokemon-list -->
-<pokemon-list></pokemon-list>
+<!-- @if ( isLoading() ) {
+  <pokemons-list-skeleton />
+}@else {
+  <pokemon-list />
+} -->
 
-<!-- Pokemon-list-skeleton -->
+<pokemon-list />
 
+<!-- <pokemons-list-skeleton /> -->
 
 <!-- Buttons: Cargar y siguiente -->
 <div class="flex justify-between">
-  <button class="mt-2">
+  <button class="mt-2" (click)="loadPokemons(1)">
     Anteriores
   </button>
 
-  <button class="mt-2">
+  <button class="mt-2" (click)="loadPokemons(-1)">
     Siguientes
   </button>
 </div>
+
+
 
