@@ -5,14 +5,13 @@
 
 
 <!-- Pokemon-list -->
-<!-- @if ( isLoading() ) {
-  <pokemons-list-skeleton />
+@if ( pokemons().length !== 0 ) {
+  <pokemon-list [pokemons]="pokemons()"/>
 }@else {
-  <pokemon-list />
-} -->
+  <pokemons-list-skeleton />
+}
 
-<pokemon-list [pokemons]="pokemons()" />
-
+<!-- <pokemon-list [pokemons]="pokemons()" /> -->
 <!-- <pokemons-list-skeleton /> -->
 
 <!-- Buttons: Cargar y siguiente -->
