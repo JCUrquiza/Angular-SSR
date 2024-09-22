@@ -1,13 +1,13 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, OnInit, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Title } from '@angular/platform-browser';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { PokemonListComponent } from "../../pokemons/components/pokemon-list/pokemon-list.component";
 import { PokemonsListSkeletonComponent } from "./ui/pokemons-list-skeleton/pokemons-list-skeleton.component";
 import { PokemonsService } from '../../pokemons/services/pokemons.service';
 import { SimplePokemon } from '../../pokemons/interfaces';
 import { map, tap } from 'rxjs';
-import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'pokemons-page',
@@ -15,6 +15,7 @@ import { Title } from '@angular/platform-browser';
   imports: [
     PokemonListComponent,
     PokemonsListSkeletonComponent,
+    RouterLink
   ],
   providers: [
     HttpClient
@@ -23,42 +24,31 @@ import { Title } from '@angular/platform-browser';
   styles: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class PokemonsPageComponent implements OnInit {
+export default class PokemonsPageComponent {
 
   private pokemonsService = inject(PokemonsService);
   public pokemons = signal<SimplePokemon[]>([]);
 
-  // public isLoading = signal(true);
-
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
   private titile = inject(Title);
 
   public currentPage = toSignal<number>(
-    this.route.queryParamMap.pipe(
-      map( params => params.get('page') ?? '1' ),
+    this.route.params.pipe(
+      map( params => params['page'] ?? '1' ),
       map( page => ( isNaN(+page) ? 1 : +page ) ),
       map( page => Math.max(1, page) )
     )
   );
 
-  ngOnInit(): void {
-
-    this.loadPokemons();
-
-    // setTimeout(() => {
-    //   this.isLoading.set(false);
-    // }, 1000);
-  }
+  public loadOnPageChanged = effect(() => {
+    this.loadPokemons(this.currentPage())
+  }, { allowSignalWrites: true });
 
   public loadPokemons(page = 0) {
     const pageToLoad = this.currentPage()! + page;
 
     this.pokemonsService.loadPage(pageToLoad)
       .pipe(
-        tap(() => {
-          this.router.navigate([], { queryParams: { page: pageToLoad } })
-        }),
         tap(() => {
           this.titile.setTitle(`Pokemons list: ${pageToLoad}`);
         })
