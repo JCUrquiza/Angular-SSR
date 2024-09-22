@@ -45,12 +45,10 @@ export default class PokemonsPageComponent {
   }, { allowSignalWrites: true });
 
   public loadPokemons(page = 0) {
-    const pageToLoad = this.currentPage()! + page;
-
-    this.pokemonsService.loadPage(pageToLoad)
+    this.pokemonsService.loadPage(page)
       .pipe(
         tap(() => {
-          this.titile.setTitle(`Pokemons list: ${pageToLoad}`);
+          this.titile.setTitle(`Pokemons list: ${page}`);
         })
       )
       .subscribe({
