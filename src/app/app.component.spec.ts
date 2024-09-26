@@ -48,8 +48,6 @@ describe('AppComponent', () => {
     // expect(routerOutletElement).not.toBeNull();
     expect(compiled.querySelector('navbar')).toBeTruthy();
     expect(compiled.querySelector('router-outlet')).toBeTruthy();
-
-    console.log(compiled);
   });
 
 });
