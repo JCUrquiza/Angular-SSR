@@ -6,7 +6,7 @@ import { SimplePokemon } from '../../interfaces';
 const mockPokemon: SimplePokemon = {
   id: '1',
   name: 'bulbasaur'
-}
+};
 
 describe('PokemonCardComponent', () => {
 
@@ -30,9 +30,25 @@ describe('PokemonCardComponent', () => {
   });
 
   it('should create the app', () => {
-    console.log(compiled);
-
     expect(component).toBeTruthy();
+  });
+
+  it('should have the SimplePokemon signal inputValue', () => {
+    expect(component.pokemon()).toEqual(mockPokemon);
+  });
+
+  it('should render the pokemon name and image correctly', () => {
+    const image = compiled.querySelector('img')!;
+    expect(image).toBeDefined();
+
+    expect(image.src).toContain(mockPokemon.id);
+    expect(compiled.textContent?.trim()).toBe(mockPokemon.name);
+  });
+
+  it('should have the proper ng-reflect-router-link', () => {
+    const divWithLink = compiled.querySelector('div');
+
+    expect(divWithLink?.attributes.getNamedItem('ng-reflect-router-link')?.value).toBe(`/pokemon,${mockPokemon.name}`);
   });
 
 });
