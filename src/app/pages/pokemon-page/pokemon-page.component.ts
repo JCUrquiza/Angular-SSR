@@ -47,6 +47,4 @@ export default class PokemonPageComponent implements OnInit {
 
   }
 
-
-
 }
