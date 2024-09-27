@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { PokemonsService } from './pokemons.service';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { PokeAPIResponse, SimplePokemon } from '../interfaces';
-import { catchError } from 'rxjs';
+import { catchError, throwError } from 'rxjs';
 
 const mockPokeApiResponse: PokeAPIResponse = {
   count: 1302,
@@ -136,6 +136,28 @@ describe(`PokemonsService`, () => {
     req.flush('Pokemón not found', {
       status: 404,
       statusText: 'Not Found'
+    });
+
+  });
+
+  it('should find out console.log if error.status === "0" on handleError', () => {
+    // Espiar el console.log
+    const consoleLogSpy = spyOn(console, 'log');
+    // Simular el compartamiento de http.get para lanzar un error
+    const errorResponse = new HttpErrorResponse({
+      error: 'Network error',
+      status: 0
+    });
+
+    spyOn(service['http'], 'get').and.returnValue(throwError(() => errorResponse));
+
+    const pokemonName = 'pokemonNoExistemon';
+    service.loadPokemon(pokemonName).subscribe({
+      next: () => fail('should have filed with a network error'),
+      error: (error) => {
+        expect(error).toBeTruthy();
+        expect(consoleLogSpy).toHaveBeenCalledWith('An error occurred: ', errorResponse.error);
+      }
     });
 
   });
