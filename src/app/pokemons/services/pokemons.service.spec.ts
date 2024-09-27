@@ -68,5 +68,51 @@ describe(`PokemonsService`, () => {
     req.flush(mockPokeApiResponse);
   });
 
+  it('should load a page 5 of SimplePokemons', () => {
+    service.loadPage(5).subscribe((pokemons) => {
+      expect(pokemons).toEqual(expectedPokemons);
+    });
+
+    const req = httpMock.expectOne(
+      `https://pokeapi.co/api/v2/pokemon?offset=80&limit=20`
+    );
+
+    expect(req.request.method).toBe('GET');
+
+    req.flush(mockPokeApiResponse);
+  });
+
+  it('should load a Pokemon by ID', () => {
+    const pokemonId = '1';
+
+    service.loadPokemon(pokemonId).subscribe((pokemon: any) => {
+      expect(pokemon).toEqual(mockPokemon);
+    });
+
+    const req = httpMock.expectOne(
+      `https://pokeapi.co/api/v2/pokemon/${ pokemonId }`
+    );
+
+    expect(req.request.method).toBe('GET');
+
+    req.flush(mockPokemon);
+  });
+
+  it('should load a Pokemon by name', () => {
+    const pokemonName = 'bulbasaur';
+
+    service.loadPokemon(pokemonName).subscribe((pokemon: any) => {
+      expect(pokemon).toEqual(mockPokemon);
+    });
+
+    const req = httpMock.expectOne(
+      `https://pokeapi.co/api/v2/pokemon/${ pokemonName }`
+    );
+
+    expect(req.request.method).toBe('GET');
+
+    req.flush(mockPokemon);
+  });
+
 });
 
