@@ -22,9 +22,24 @@ describe('App Routes', () => {
     expect(location.path()).toBe('/about');
   });
 
+  it('should navigate to "contact" redirects to "/contact"', async() => {
+    await router.navigate(['contact']);
+    expect(location.path()).toBe('/contact');
+  });
+
+  it('should navigate to "pricing" redirects to "/pricing"', async() => {
+    await router.navigate(['pricing']);
+    expect(location.path()).toBe('/pricing');
+  });
+
   it('should navigate to "pokemons/page/1" redirects to "/pokemons/page/1"', async() => {
     await router.navigate(['pokemons/page/1']);
     expect(location.path()).toBe('/pokemons/page/1');
+  });
+
+  it('should navigate to "pokemon/1" redirects to "/pokemon/1"', async() => {
+    await router.navigate(['pokemon/1']);
+    expect(location.path()).toBe('/pokemon/1');
   });
 
   it('should redirects to "/about" if we want to wrong path', async() => {
