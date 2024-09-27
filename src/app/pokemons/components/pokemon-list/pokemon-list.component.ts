@@ -7,7 +7,6 @@ import { SimplePokemon } from '../../interfaces';
   standalone: true,
   imports: [PokemonCardComponent],
   templateUrl: './pokemon-list.component.html',
-  styles: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PokemonListComponent {
