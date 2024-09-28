@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Meta, Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import PokemonPageComponent from './pokemon-page.component';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
@@ -16,8 +16,19 @@ describe('PokemonPageComponent', () => {
   let titleServiceSpy: jasmine.SpyObj<Title>;
   let metaServiceSpy: jasmine.SpyObj<Meta>;
   let pokemonsServiceSpy: jasmine.SpyObj<PokemonsService>;
+  let activatedRouteSpy: jasmine.SpyObj<ActivatedRoute>;
 
   const mockPokemon = { id: 1, name: 'Bulbasaur' } as Pokemon;
+
+  // Crear un mock de ParamMap
+  const createParamMapMock = (params: { [key: string]: string }): ParamMap => {
+    return {
+      has: (key: string) => key in params,
+      get: (key: string) => params[key] || null,
+      getAll: (key: string) => [params[key]],
+      keys: Object.keys(params),
+    } as ParamMap;
+  };
 
   beforeEach(async () => {
     // Crear spy para title y meta service
@@ -25,13 +36,10 @@ describe('PokemonPageComponent', () => {
     metaServiceSpy = jasmine.createSpyObj('Meta', ['updateTag']);
     pokemonsServiceSpy = jasmine.createSpyObj('PokemonsService', ['loadPokemon']);
 
-    const activatedRouteMock = {
-      snapshot: {
-        paramMap: {
-          get: () => '1' // Simular el parámetro de ruta "id"
-        }
-      }
-    };
+    activatedRouteSpy = jasmine.createSpyObj('ActivatedRoute', ['snapshot']);
+    activatedRouteSpy.snapshot = {
+      paramMap: createParamMapMock({ id: '1' })
+    } as any;
 
     await TestBed.configureTestingModule({
       imports: [PokemonPageComponent],
@@ -41,7 +49,7 @@ describe('PokemonPageComponent', () => {
         { provide: Title, useValue: titleServiceSpy },
         { provide: Meta, useValue: metaServiceSpy },
         { provide: PokemonsService, useValue: pokemonsServiceSpy },
-        { provide: ActivatedRoute, useValue: activatedRouteMock }
+        { provide: ActivatedRoute, useValue: activatedRouteSpy }
       ]
     }).compileComponents();
 
@@ -72,21 +80,17 @@ describe('PokemonPageComponent', () => {
     expect(metaServiceSpy.updateTag).toHaveBeenCalledWith({ name: 'og:image', content: imageUrl });
   });
 
-  // it('should return if "id" is empty', () => {
-  //   const activatedRouteMockForIdNull = {
-  //     snapshot: {
-  //       paramMap: {
-  //         get: () => '' // Simular el parámetro de ruta "id"
-  //       }
-  //     }
-  //   };
-  //   TestBed.overrideProvider(ActivatedRoute, { useValue: activatedRouteMockForIdNull  });
-  //   fixture.detectChanges();
+  it('should return if "id" is empty', () => {
+    activatedRouteSpy.snapshot = {
+      paramMap: createParamMapMock({ id: '' })
+    } as any;
 
-  //   component.ngOnInit();
+    fixture.detectChanges();
 
-  //   expect(pokemonsServiceSpy.loadPokemon).not.toHaveBeenCalled();
-  // });
+    component.ngOnInit();
+
+    expect(pokemonsServiceSpy.loadPokemon).not.toHaveBeenCalled();
+  });
 
 });
 
