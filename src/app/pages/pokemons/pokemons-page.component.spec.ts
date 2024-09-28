@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { ActivatedRoute, ParamMap, provideRouter } from '@angular/router';
+import { ActivatedRoute, provideRouter } from '@angular/router';
 import PokemonsPageComponent from './pokemons-page.component';
 import { PokemonsService } from '../../pokemons/services/pokemons.service';
 import { Title } from '@angular/platform-browser';
@@ -17,16 +17,6 @@ describe('PokemonsPageComponent', () => {
   let pokemonsServiceSpy: jasmine.SpyObj<PokemonsService>;
   let titleServiceSpy: jasmine.SpyObj<Title>;
   let activatedRouteSubject: BehaviorSubject<any>;
-
-  // Crear un mock de ParamMap
-  const createParamMapMock = (params: { [key: string]: string }): ParamMap => {
-    return {
-      has: (key: string) => key in params,
-      get: (key: string) => params[key] || null,
-      getAll: (key: string) => [params[key]],
-      keys: Object.keys(params),
-    } as ParamMap;
-  };
 
   beforeEach(async () => {
 
@@ -66,7 +56,6 @@ describe('PokemonsPageComponent', () => {
       { id: '1', name: 'bulbasaur' },
       { id: '2', name: 'ivysaur' }
     ];
-
     // Arrange: simulate loadPage response
     pokemonsServiceSpy.loadPage.and.returnValue(of(mockResponse)); // Simulate observable response
 
@@ -83,11 +72,11 @@ describe('PokemonsPageComponent', () => {
       { id: '2', name: 'ivysasaur' },
     ];
     pokemonsServiceSpy.loadPage.and.returnValue(of(mockResponse));
-
+    // Act: change the route param and trigger the effect
     activatedRouteSubject.next({ page: '3' });
-
+    // Necesario detectar los cambios para que el componente procese la nueva señal
     fixture.detectChanges();
-
+    // Assert: verify loadPokemons is called with the correct page
     expect(pokemonsServiceSpy.loadPage).toHaveBeenCalledWith(3);
   });
 
